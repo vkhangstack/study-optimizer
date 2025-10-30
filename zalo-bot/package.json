@@ -4,6 +4,7 @@
   "description": "Zalo Bot with webhook service",
   "main": "src/index.ts",
   "type": "module",
+  "license": "MIT",
   "scripts": {
     "build": "bun build src/index.ts --outdir dist --target bun --packages external",
     "start": "bun run src/index.ts",
