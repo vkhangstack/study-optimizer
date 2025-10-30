@@ -1,0 +1,60 @@
+# Docker Compose file for Zalo Bot Production
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: zalo-bot-postgres-prod
+    restart: always
+    environment:
+      POSTGRES_DB: zalo_bot_db
+      POSTGRES_USER: zalo_user
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_prod_data:/var/lib/postgresql/data
+    networks:
+      - zalo-bot-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zalo_user -d zalo_bot_db"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Zalo Bot Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: production
+    container_name: zalo-bot-app-prod
+    restart: always
+    environment:
+      NODE_ENV: production
+      DATABASE_URL: postgresql://zalo_user:${POSTGRES_PASSWORD}@postgres:5432/zalo_bot_db
+      PORT: 3000
+      ZALO_BOT_TOKEN: ${ZALO_BOT_TOKEN}
+      WEBHOOK_URL: ${WEBHOOK_URL}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET}
+    ports:
+      - "3000:3000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - zalo-bot-network
+    command: >
+      sh -c "
+        echo 'Running database migrations...' &&
+        bunx prisma migrate deploy &&
+        echo 'Starting production server...' &&
+        bun start
+      "
+
+volumes:
+  postgres_prod_data:
+    driver: local
+
+networks:
+  zalo-bot-network:
+    driver: bridge

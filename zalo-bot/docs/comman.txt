@@ -1,0 +1,4 @@
+/add_assignment_class {"name":"Bài tập buổi 1 Cấu trúc dữ liệu và giải thuật","classSubjectId":"IT003.F13.LT.CNTT", "deadline":"2025-10-29 23:59"}
+/add_assignment_class {"name":"Bài tập buổi 1 Cấu trúc dữ liệu và giải thuật","classSubjectId":"IT003.F13.LT.CNTT", "deadline":"2025-10-29 23:59"}
+
+/add_assignment_class {"name":"Buổi 2 - Bài tập tuần & code - Học tối thứ 5 ngày 30/10","classSubjectId":"IT003.F13.LT.CNTT", "deadline":"2025-11-05 20:00"}

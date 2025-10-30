@@ -1,0 +1,93 @@
+# Docker Compose file for Zalo Bot Development
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: zalo-bot-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: zalo_bot_db
+      POSTGRES_USER: zalo_user
+      POSTGRES_PASSWORD: zalo_password
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db:/docker-entrypoint-initdb.d:ro
+    ports:
+      - "5432:5432"
+    networks:
+      - zalo-bot-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zalo_user -d zalo_bot_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Zalo Bot Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: development
+    container_name: zalo-bot-app
+    restart: unless-stopped
+    environment:
+      NODE_ENV: development
+      DATABASE_URL: postgresql://zalo_user:zalo_password@postgres:5432/zalo_bot_db
+      PORT: 3000
+      ZALO_BOT_TOKEN: ${ZALO_BOT_TOKEN:-YOUR_ZALO_BOT_TOKEN}
+      WEBHOOK_URL: ${WEBHOOK_URL:-https://your-ngrok-or-domain/webhook}
+      WEBHOOK_SECRET: ${WEBHOOK_SECRET:-your_webhook_secret}
+    ports:
+      - "3000:3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+      - bun_cache:/root/.bun
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - zalo-bot-network
+    command: >
+      sh -c "
+        echo 'Waiting for database to be ready...' &&
+        echo 'Generating Prisma client...' &&
+        bunx prisma generate &&
+        echo 'Pushing database schema...' &&
+        bunx prisma db push &&
+        echo 'Database schema updated!' &&
+        echo 'Starting development server...' &&
+        bun --watch src/index-simple.ts
+      "
+
+  # pgAdmin (Optional - for database management)
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: zalo-bot-pgadmin
+    restart: unless-stopped
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@zalobot.com
+      PGADMIN_DEFAULT_PASSWORD: admin123
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+    ports:
+      - "8080:80"
+    volumes:
+      - pgadmin_data:/var/lib/pgadmin
+    depends_on:
+      - postgres
+    networks:
+      - zalo-bot-network
+
+volumes:
+  postgres_data:
+    driver: local
+  pgadmin_data:
+    driver: local
+  bun_cache:
+    driver: local
+
+networks:
+  zalo-bot-network:
+    driver: bridge

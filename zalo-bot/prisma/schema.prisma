@@ -1,0 +1,146 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider      = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x", "debian-openssl-1.1.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default("")
+  zaloId    String   @unique @map("zalo_id")
+  name      String
+  avatar    String?
+  phone     String?
+  notify    Boolean  @default(true)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  messages Message[]
+
+  @@map("users")
+}
+
+model Message {
+  id        String    @id @default(uuid())
+  chatId    String?   @map("chat_id")
+  userId    String    @map("user_id")
+  content   String?
+  type      String    @default("TEXT")
+  direction Direction @default(INCOMING)
+  timestamp DateTime  @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("messages")
+}
+
+model Conversation {
+  id        String   @id @default(uuid())
+  zaloId    String   @unique @map("zalo_id")
+  status    String   @default("active")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("conversations")
+}
+
+model BotConfig {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("bot_configs")
+}
+
+model ScheduleConfig {
+  id          String   @id @default(uuid())
+  key         String   @unique
+  value       String
+  description String?
+  userId      String   @map("user_id")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  @@map("schedule_configs")
+}
+
+model ClassSubject {
+  id          String   @id @default(uuid())
+  subjectId   String   @unique @map("subject_id")
+  subjectName String   @map("subject_name")
+  dayOfWeek   Int      @default(1) @map("day_of_week")
+  startTime   String   @map("start_time")
+  endTime     String   @map("end_time")
+  certificate Int?     @map("certificate")
+  year        String   @map("year")
+  semester    Int      @map("semester")
+  isMain      Boolean  @default(false) @map("is_main")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+  teacher     String?
+
+  @@map("class_subjects")
+}
+
+model UserClassSubject {
+  id             String   @id @default(uuid())
+  userId         String   @map("user_id")
+  classSubjectId String   @map("class_subject_id")
+  year           String   @map("year")
+  semester       Int      @map("semester")
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
+
+  @@map("user_class_subjects")
+}
+
+model Assignment {
+  id             String    @id @unique
+  name           String
+  classSubjectId String?   @map("class_subject_id")
+  description    String?
+  deadline       DateTime  @map("deadline")
+  deadlineRemind DateTime? @map("deadline_remind")
+  createdAt      DateTime  @default(now()) @map("created_at")
+  updatedAt      DateTime  @updatedAt @map("updated_at")
+
+  @@map("assignments")
+}
+
+model UserAssignment {
+  id           String   @id @default(uuid())
+  userId       String   @map("user_id")
+  assignmentId String   @map("assignment_id")
+  status       String   @default("pending")
+  isDeleted    Boolean  @default(false) @map("is_deleted")
+  createdAt    DateTime @default(now()) @map("created_at")
+  updatedAt    DateTime @updatedAt @map("updated_at")
+  createdBy    String?  @map("created_by")
+  updatedBy    String?  @map("updated_by")
+
+  @@map("user_assignments")
+}
+
+enum MessageType {
+  TEXT
+  IMAGE
+  FILE
+  STICKER
+  LOCATION
+  TEMPLATE
+}
+
+enum Direction {
+  INCOMING
+  OUTGOING
+}

@@ -1,0 +1,47 @@
+{
+  "name": "study-optimizer-zalo-bot",
+  "version": "1.0.0",
+  "description": "Zalo Bot with webhook service",
+  "main": "src/index.ts",
+  "type": "module",
+  "scripts": {
+    "build": "bun build src/index.ts --outdir dist --target bun --packages external",
+    "start": "bun run src/index.ts",
+    "dev": "bun --watch src/index.ts",
+    "postinstall": "bunx prisma generate",
+    "db:generate": "bunx prisma generate",
+    "db:push": "bunx prisma db push",
+    "db:migrate": "bunx prisma migrate dev",
+    "db:studio": "bunx prisma studio",
+    "broadcast": "bun run src/scripts/broadcast.ts",
+    "docker:dev": "./scripts/docker-dev.sh up",
+    "docker:down": "./scripts/docker-dev.sh down",
+    "docker:logs": "./scripts/docker-dev.sh logs",
+    "docker:shell": "./scripts/docker-dev.sh shell",
+    "format": "bunx @biomejs/biome format --write .",
+    "test": "bun test",
+    "format:check": "bunx @biomejs/biome format .",
+    "lint": "bunx @biomejs/biome lint .",
+    "lint:fix": "bunx @biomejs/biome lint --write .",
+    "check": "bunx @biomejs/biome check .",
+    "check:fix": "bunx @biomejs/biome check --write .",
+    "type-check": "bunx tsc --noEmit",
+    "db:indexes": "docker compose exec postgres psql -U zalo_user -d zalo_bot_db -f /docker-entrypoint-initdb.d/post-prisma-indexes.sql"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.18.0",
+    "axios": "^1.6.0",
+    "body-parser": "^1.20.2",
+    "cors": "^2.8.5",
+    "dotenv": "^17.2.3",
+    "express": "^4.18.2",
+    "helmet": "^7.1.0",
+    "node-cron": "^4.2.1"
+  },
+  "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^4.17.21",
+    "bun-types": "latest",
+    "prisma": "^6.18.0"
+  }
+}

@@ -1,0 +1,12 @@
+[install]
+# Configure package manager
+registry = "https://registry.npmjs.org/"
+cache = false
+
+[run]
+# Configure runtime
+shell = "bun"
+
+[test]
+# Test configuration
+preload = ["./src/test-setup.ts"]

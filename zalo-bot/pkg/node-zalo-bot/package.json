@@ -1,0 +1,19 @@
+{
+  "name": "node-zalo-bot",
+  "version": "0.1.6",
+  "description": "SDK Nodejs for Zalo Bot",
+  "main": "./src/index.js",
+  "dependencies": {
+    "@cypress/request": "^3.0.8",
+    "@cypress/request-promise": "^5.0.0",
+    "array.prototype.findindex": "^2.0.2",
+    "axios": "^1.10.0",
+    "bl": "^1.2.3",
+    "debug": "^3.2.7",
+    "dotenv": "^16.5.0",
+    "eventemitter3": "^3.0.0",
+    "file-type": "^3.9.0",
+    "mime": "^1.6.0",
+    "pump": "^2.0.0"
+  }
+}
