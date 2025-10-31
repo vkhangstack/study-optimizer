@@ -344,10 +344,21 @@ export class BotService {
         if (assignmentYetDue.length === 0) {
           continue
         }
-        message += `📌 Nhắc nhở: Bạn có ${assignmentYetDue.length} bài tập sắp đến hạn:\n${assignmentYetDue
-          .map((ua) => `📍 ${ua?.name}   ✒️ Hạn nộp: ${DateUtils.getInstance().formatDateTime(ua!.deadline)}`)
-          .join("\n")}
-        \nHãy hoàn thành chúng đúng hạn nhé! 💪`
+        const classSubjects = await this.classService.getClassSubjectMap(user.id)
+        if (!classSubjects) {
+          continue
+        }
+
+        message += `📌 Nhắc nhở: Bạn có ${assignmentYetDue.length} bài tập sắp đến hạn:\n\n${assignmentYetDue
+          .map(
+            (ua) =>
+              `📍 ${ua?.name}\n📚 Môn: ${classSubjects[ua.classSubjectId || ""]?.subjectName}\n✒️  Hạn nộp: ${DateUtils.getInstance().formatDateTime(
+                ua!.deadline
+              )}\n${Array.from({ length: 50 })
+                .map(() => "-")
+                .join("")}  `
+          )
+          .join("\n")}\nHãy hoàn thành chúng đúng hạn nhé! 💪`
         await this.sendDirectMessage(user.zaloId, message)
         logger.info(`Daily assignment due reminder sent to user ${user.id}`)
       }
