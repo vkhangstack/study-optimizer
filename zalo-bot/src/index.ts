@@ -11,6 +11,7 @@ import { BotService } from "./services/botService"
 import { config } from "dotenv"
 import { CrobService } from "./services/crobService"
 import { DateUtils } from "./utils/date"
+import { configureRoutes, getRoutesInfo } from "./routes"
 config()
 
 if (await Bun.file(".env").exists()) {
@@ -76,20 +77,12 @@ app.post("/webhook", (req, res) => {
   }
 })
 
-// Health check
-app.get("/health", (req, res) => {
-  res.json({
-    status: "OK",
-    timestamp: new Date().toISOString(),
-    memoryUsage: process.memoryUsage(),
-    uptime: process.uptime(),
-    version: process.version,
-    information: "Study Optimizer Zalo Bot is running",
-  })
-})
-
 // Error handling
 app.use(errorHandler)
+
+configureRoutes(app)
+
+logger.info("Registered Routes:", getRoutesInfo())
 
 // Start server
 async function startServer() {
@@ -130,10 +123,10 @@ function initCrobJobs() {
       void botService.dailyNotificationCalendarSubject()
     }),
     // Daily quote job at 8:30 AM every day
-    CrobService.getInstance().addJob("daily-quote", "30 8 * * *", () => {
-      console.log("Running daily quote job...", DateUtils.getInstance().formatDateTime(new Date()))
-      void botService.dailyQuoteToAllUsers()
-    }),
+    // CrobService.getInstance().addJob("daily-quote", "30 8 * * *", () => {
+    //   console.log("Running daily quote job...", DateUtils.getInstance().formatDateTime(new Date()))
+    //   void botService.dailyQuoteToAllUsers()
+    // }),
     // Daily reminder job for assignment due at 2:30 PM every day
     CrobService.getInstance().addJob("daily-reminder-assignment-due", "30 14 * * *", () => {
       console.log("Running daily reminder job for assignment due...", DateUtils.getInstance().formatDateTime(new Date()))
