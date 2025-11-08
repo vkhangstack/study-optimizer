@@ -13,7 +13,8 @@ export class AdminController {
 
   getAssignments = async (req: Request, res: Response) => {
     try {
-      const { classSubjectId } = req.params
+      const queryData = req.query
+      const classSubjectId = queryData["classSubjectId"] as string
       if (!classSubjectId) {
         return res.status(400).json({ success: false, message: "classSubjectId is required" })
       }
