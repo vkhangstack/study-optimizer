@@ -102,6 +102,26 @@ jobs:
               exit 1
             fi
 
+      - name: Remove image previous versions
+        uses: appleboy/ssh-action@v1.0.0
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+          VERSION: ${{ steps.version.outputs.version }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || '22' }}
+          envs: DOCKER_USERNAME,IMAGE_NAME,VERSION
+          script: |
+            echo "🧹 Cleaning up old Docker images..."
+            IMAGES_TO_REMOVE=$(docker images ${DOCKER_USERNAME}/${IMAGE_NAME} --format "{{.Tag}}" | grep -v "^${VERSION}$")
+            for TAG in $IMAGES_TO_REMOVE; do
+              echo "Removing image: ${DOCKER_USERNAME}/${IMAGE_NAME}:${TAG}"
+              docker rmi ${DOCKER_USERNAME}/${IMAGE_NAME}:${TAG} || echo "Failed to remove image: ${TAG}"
+            done
+
       - name: Notify Success
         if: success()
         run: |
