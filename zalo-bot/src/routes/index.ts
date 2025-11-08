@@ -2,6 +2,7 @@ import { Express } from "express"
 import adminRoutes from "./admin"
 import botRoutes from "./bot"
 import { logger } from "../utils/logger"
+import { adminAuthentication } from "../middleware/adminAuthenticaiton"
 
 /**
  * Configure all application routes
@@ -21,7 +22,7 @@ export function configureRoutes(app: Express): void {
   })
 
   // API Routes
-  app.use("/api/admin", adminRoutes)
+  app.use("/api/admin", adminAuthentication, adminRoutes)
   app.use("/api/bot", botRoutes)
   //   app.use("/webhook", webhookRoutes)
 
