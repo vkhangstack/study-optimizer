@@ -8,11 +8,14 @@ export class AdminController {
   private assignmentService: AssignmentService
   private classSubjectService: ClassService
   private botService: BotService
+  private classService: ClassService
 
   constructor() {
     this.assignmentService = AssignmentService.getInstance()
     this.classSubjectService = ClassService.getInstance()
     this.botService = BotService.getInstance()
+    this.classService = ClassService.getInstance()
+
   }
 
   getAssignments = async (req: Request, res: Response) => {
@@ -50,6 +53,12 @@ export class AdminController {
         deadline: new Date(deadline),
         deadlineRemind: deadlineRemind ? new Date(deadlineRemind) : undefined,
       })
+
+      const users = await this.classService.getUsersRegisteredClass(classSubjectInfo.id)
+
+      for (const user of users) {
+        await this.assignmentService.assignAssignmentToUser(assignment.id, user, user)
+      }
       res.json({ success: true, assignment })
     } catch (error) {
       logger.error("Error creating assignment:", error)
