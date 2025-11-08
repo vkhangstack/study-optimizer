@@ -6,6 +6,8 @@ const BOT_RESPONSES = {
     alternatives: ["Chào bạn! Rất vui được hỗ trợ bạn hôm nay. 😊", "Hi! Tôi có thể giúp gì cho bạn?"],
   },
 
+  //  "• /schedule - Xem lịch tuần\n" +
+  // "  Ví dụ: /schedule hoặc /lịch học\n\n" +
   // Trợ giúp
   help: {
     text:
@@ -27,8 +29,6 @@ const BOT_RESPONSES = {
       "• /notify [true|false] - Bật/Tắt thông báo\n" +
       "  Ví dụ: /notify true hoặc /notify false\n\n" +
       "**Lịch học:**\n" +
-      "• /schedule - Xem lịch tuần\n" +
-      "  Ví dụ: /schedule hoặc /lịch học\n\n" +
       "• /today - Xem lịch hôm nay\n" +
       "  Ví dụ: /today\n\n" +
       "• /class [Mã môn] - Chi tiết lớp học\n" +
@@ -61,8 +61,8 @@ const BOT_RESPONSES = {
       "• Quản lý bài tập\n" +
       "• Truy cập tài liệu học tập\n" +
       "• Theo dõi tiến độ học tập\n\n" +
-      "📧 **Hỗ trợ:** Liên hệ admin nếu cần trợ giúp\n" +
-      "🔖 **Phiên bản:** 1.0.0",
+      "📧 Hỗ trợ: Liên hệ admin nếu cần trợ giúp\n" +
+      "🔖 Phiên bản thử nghiệm: 1.0.0"
   },
 
   // Đăng ký
