@@ -38,7 +38,7 @@ class Logger {
   error(message: string, error?: any): void {
     const formatted = this.formatMessage(LOG_LEVELS.ERROR, message, error);
     console.error(formatted);
-    
+
     if (this.isDevelopment && error?.stack) {
       console.error(error.stack);
     }

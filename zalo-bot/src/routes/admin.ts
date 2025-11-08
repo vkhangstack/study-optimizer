@@ -10,6 +10,8 @@ router.get("/assignments", adminController.getAssignments)
 router.delete("/assignments/:id", adminController.deleteAssignment)
 router.put("/assignments/:id", adminController.updateAssignment)
 
+router.post("/assignments/notify-deadline", adminController.notifyAssignmentDeadline)
+
 router.get("/class-subjects", adminController.getClassSubjects)
 
 export default router

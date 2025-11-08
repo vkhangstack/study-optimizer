@@ -31,6 +31,15 @@ export class BotService {
     this.classService = new ClassService()
   }
 
+  public static getInstance(): BotService {
+    if (!(global as any).botServiceInstance) {
+      const zaloService = ZaloBotService.getInstance()
+      const prisma = new PrismaClient()
+      ;(global as any).botServiceInstance = new BotService(zaloService, prisma)
+    }
+    return (global as any).botServiceInstance
+  }
+
   async onText(msg: { event_name: string; message: ZaloBotWebhookMessage; message_type?: MessageType }): Promise<void> {
     try {
       // Bot xử lý khi có message gửi đến
