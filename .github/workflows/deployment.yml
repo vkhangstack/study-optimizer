@@ -9,7 +9,8 @@ on:
       - master
 
 env:
-  IMAGE_NAME: vkhangstack/studyoptimizer-bot
+  IMAGE_NAME: studyoptimizer-bot
+  DOCKER_USERNAME: vkhangstack
 
 jobs:
   deploy:
@@ -32,7 +33,7 @@ jobs:
       - name: Deploy to Server via SSH
         uses: appleboy/ssh-action@v1.0.0
         env:
-          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          DOCKER_USERNAME: ${{ env.DOCKER_USERNAME }}
           VERSION: ${{ steps.version.outputs.version }}
           IMAGE_NAME: ${{ env.IMAGE_NAME }}
         with:
