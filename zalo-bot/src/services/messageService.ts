@@ -485,11 +485,11 @@ export class MessageService {
               assignments
                 .map(
                   (a) =>
-                    `• Mã: ${a?.id}\n• Bài tập: ${a.assignment?.name}\n• Mô tả: ${a.assignment?.description}\n• Hạn nộp: ${DateUtils.getInstance().formatDate(
+                    `• Mã: ${a?.id}\n• Bài tập: ${a.assignment?.name}\n${a.assignment?.description ? "• Mô tả: " + a.assignment?.description + "\n" : ""
+                    }• Hạn nộp: ${DateUtils.getInstance().formatDate(
                       a.assignment?.deadline
                     )}\n• Môn: ${a.assignment?.classSubjectId ? classSubject[a.assignment?.classSubjectId]?.subjectName : "Không xác định"
-                    }\n• Hoàn thành: ${a.status === AssignmentStatus.COMPLETED ? "✅" : "❌"}\n${a.assignment?.description ? "• Mô tả: " + a.assignment?.description + "\n" : ""
-                    }${Array.from({ length: 36 })
+                    }\n• Hoàn thành: ${a.status === AssignmentStatus.COMPLETED ? "✅" : "❌"}\n${Array.from({ length: 36 })
                       .map(() => "-")
                       .join("")}`
                 )
