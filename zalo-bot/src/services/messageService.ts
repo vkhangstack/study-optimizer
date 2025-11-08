@@ -377,20 +377,18 @@ export class MessageService {
               result.message = "❌ Không tìm thấy lớp học với mã: " + classSubjectId
               break
             } else {
-              result.message = `📚 Lớp học của bạn:\n • Mã: ${classInfo?.subjectName}\n• Môn: ${classInfo?.subjectId}\n• Giảng viên: ${
-                classInfo?.teacher
-              }\n• Thời gian: ${classInfo?.startTime} đến ${classInfo?.endTime} ${DateUtils.getInstance().getDayOfWeekText(
-                classInfo?.dayOfWeek
-              )}\n${Array.from({ length: 50 })
-                .map(() => "-")
-                .join("")}`
+              result.message = `📚 Lớp học của bạn:\n • Mã: ${classInfo?.subjectName}\n• Môn: ${classInfo?.subjectId}\n• Giảng viên: ${classInfo?.teacher
+                }\n• Thời gian: ${classInfo?.startTime} đến ${classInfo?.endTime} ${DateUtils.getInstance().getDayOfWeekText(
+                  classInfo?.dayOfWeek
+                )}\n${Array.from({ length: 50 })
+                  .map(() => "-")
+                  .join("")}`
             }
           } else {
             let responseMsgClass = `📚 Lớp học của bạn:\n${classes
               .map(
                 (cls) =>
-                  `• Mã: ${classSubject[cls.id]?.subjectName}\n• Môn: ${cls.subjectId}\n• Giảng viên: ${cls.teacher}\n• Thời gian: ${
-                    cls.startTime
+                  `• Mã: ${classSubject[cls.id]?.subjectName}\n• Môn: ${cls.subjectId}\n• Giảng viên: ${cls.teacher}\n• Thời gian: ${cls.startTime
                   } đến ${cls.endTime} ${DateUtils.getInstance().getDayOfWeekText(cls.dayOfWeek)}\n${Array.from({ length: 50 })
                     .map(() => "-")
                     .join("")}`
@@ -483,17 +481,15 @@ export class MessageService {
           } else {
             const classSubject = await this.classService.getClassSubjectMap(userId)
             result.message =
-              "🫣 Danh sách bài tập của bạn:\n" +
+              "🫣 Danh sách bài tập của bạn:\n\n" +
               assignments
                 .map(
                   (a) =>
-                    `• Bài tập: ${a.assignment?.name}\n• Mã: ${a?.id}\n• Hạn nộp: ${DateUtils.getInstance().formatDate(
+                    `• Mã: ${a?.id}\n• Bài tập: ${a.assignment?.name}\n• Mô tả: ${a.assignment?.description}\n• Hạn nộp: ${DateUtils.getInstance().formatDate(
                       a.assignment?.deadline
-                    )}\n• Môn: ${
-                      a.assignment?.classSubjectId ? classSubject[a.assignment?.classSubjectId]?.subjectName : "Không xác định"
-                    }\n• Hoàn thành: ${a.status === AssignmentStatus.COMPLETED ? "✅" : "❌"}\n${
-                      a.assignment?.description ? "• Mô tả: " + a.assignment?.description + "\n" : ""
-                    }${Array.from({ length: 50 })
+                    )}\n• Môn: ${a.assignment?.classSubjectId ? classSubject[a.assignment?.classSubjectId]?.subjectName : "Không xác định"
+                    }\n• Hoàn thành: ${a.status === AssignmentStatus.COMPLETED ? "✅" : "❌"}\n${a.assignment?.description ? "• Mô tả: " + a.assignment?.description + "\n" : ""
+                    }${Array.from({ length: 36 })
                       .map(() => "-")
                       .join("")}`
                 )
@@ -536,9 +532,8 @@ export class MessageService {
                 (a) => a.name === assignmentDetails.name && DateUtils.getInstance().isSameDay(a.deadline, deadlineDate)
               )
               if (duplicate) {
-                result.message = `Bài tập với tên "${assignmentDetails.name}" thuộc môn ${
-                  classSubjectInfo?.subjectName
-                } và hạn nộp vào ${DateUtils.getInstance().formatDate(deadlineDate)} đã tồn tại. Vui lòng kiểm tra lại.`
+                result.message = `Bài tập với tên "${assignmentDetails.name}" thuộc môn ${classSubjectInfo?.subjectName
+                  } và hạn nộp vào ${DateUtils.getInstance().formatDate(deadlineDate)} đã tồn tại. Vui lòng kiểm tra lại.`
                 result.response = true
                 break
               }
@@ -550,9 +545,8 @@ export class MessageService {
                   deadline: deadlineDate,
                   description: assignmentDetails.description || "",
                 })
-                result.message = `Đã thêm bài tập: ${assignmentDetails.name} thuộc môn ${
-                  classSubjectInfo?.subjectName
-                } với hạn nộp vào ${DateUtils.getInstance().formatDate(deadlineDate)}`
+                result.message = `Đã thêm bài tập: ${assignmentDetails.name} thuộc môn ${classSubjectInfo?.subjectName
+                  } với hạn nộp vào ${DateUtils.getInstance().formatDate(deadlineDate)}`
               } catch (error: any) {
                 result.message = `Lỗi khi tạo bài tập: ${error.message as unknown as string}`
                 result.response = true
@@ -626,9 +620,8 @@ export class MessageService {
               )
               const assignment = await this.assignmentService.getAssignmentById(assignmentRecord.assignmentId)
               const classSubject = await this.classService.getClassSubjectById(assignment?.classSubjectId || "")
-              result.message = `Đã cập nhật trạng thái bài tập "${assignment?.name}" môn [${classSubject?.subjectName}] thành ${
-                completed ? "hoàn thành ✅" : "chưa hoàn thành ❌"
-              }.`
+              result.message = `Đã cập nhật trạng thái bài tập "${assignment?.name}" môn [${classSubject?.subjectName}] thành ${completed ? "hoàn thành ✅" : "chưa hoàn thành ❌"
+                }.`
             }
           }
 

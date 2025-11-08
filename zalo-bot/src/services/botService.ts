@@ -35,7 +35,7 @@ export class BotService {
     if (!(global as any).botServiceInstance) {
       const zaloService = ZaloBotService.getInstance()
       const prisma = new PrismaClient()
-      ;(global as any).botServiceInstance = new BotService(zaloService, prisma)
+        ; (global as any).botServiceInstance = new BotService(zaloService, prisma)
     }
     return (global as any).botServiceInstance
   }
@@ -279,8 +279,7 @@ export class BotService {
       let responseMsg = `📚 Lớp học của bạn:\n${classes
         .map(
           (cls) =>
-            `• Môn: ${cls.subjectName} - Giảng viên: ${cls.teacher} -  Thời gian: ${cls.startTime} đến ${
-              cls.endTime
+            `• Môn: ${cls.subjectName} - Giảng viên: ${cls.teacher} -  Thời gian: ${cls.startTime} đến ${cls.endTime
             } ${DateUtils.getInstance().getDayOfWeekText(cls.dayOfWeek)}`
         )
         .join("\n")}\nChúc bạn một tuần học tập hiệu quả! 🎉`
@@ -361,9 +360,9 @@ export class BotService {
         message += `📌 Nhắc nhở: Bạn có ${assignmentYetDue.length} bài tập sắp đến hạn:\n\n${assignmentYetDue
           .map(
             (ua) =>
-              `📍 ${ua?.name}\n📚 Môn: ${classSubjects[ua.classSubjectId || ""]?.subjectName}\n✒️  Hạn nộp: ${DateUtils.getInstance().formatDateTime(
+              `📍 ${ua?.name}\n📖 Mô tả: ${ua?.description}\n📚 Môn: ${classSubjects[ua.classSubjectId || ""]?.subjectName}\n✒️  Hạn nộp: ${DateUtils.getInstance().formatDateTime(
                 ua!.deadline
-              )}\n${Array.from({ length: 50 })
+              )}\n${Array.from({ length: 36 })
                 .map(() => "-")
                 .join("")}  `
           )
