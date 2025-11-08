@@ -1,0 +1,114 @@
+name: Deploy to SSH Server
+
+on:
+  workflow_run:
+    workflows: ["Release - Build and Push Docker Image"]
+    types:
+      - completed
+    branches:
+      - master
+
+env:
+  IMAGE_NAME: vkhangstack/studyoptimizer-bot
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+
+    steps:
+      - name: Extract version
+        id: version
+        run: |
+          # Get the tag or commit that triggered the workflow
+          if [[ "${{ github.event.workflow_run.head_branch }}" == v* ]]; then
+            VERSION="${{ github.event.workflow_run.head_branch }}"
+          else
+            VERSION="latest"
+          fi
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Deploying version: ${VERSION}"
+
+      - name: Deploy to Server via SSH
+        uses: appleboy/ssh-action@v1.0.0
+        env:
+          DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+          VERSION: ${{ steps.version.outputs.version }}
+          IMAGE_NAME: ${{ env.IMAGE_NAME }}
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || '22' }}
+          envs: DOCKER_USERNAME,VERSION,IMAGE_NAME
+          script: |
+            set -e
+            echo "🚀 Starting deployment..."
+
+            # Navigate to deployment directory
+            cd ~/prod/study || {
+              echo "❌ Deployment directory not found!"
+              exit 1
+            }
+
+            # Update the image line in docker-compose.yaml
+            echo "📝 Updating docker-compose.yaml with new image version..."
+            sed -i "s|image: .*/studyoptimizer-bot:.*|image: ${DOCKER_USERNAME}/${IMAGE_NAME}:${VERSION}|g" docker-compose.yaml
+
+            # Show the change
+            echo "Updated image line:"
+            grep "image: ${DOCKER_USERNAME}/${IMAGE_NAME}" docker-compose.yaml || echo "Warning: Image line not found"
+
+            # Pull the new image
+            echo "🐋 Pulling Docker image: ${DOCKER_USERNAME}/${IMAGE_NAME}:${VERSION}"
+            docker pull ${DOCKER_USERNAME}/${IMAGE_NAME}:${VERSION}
+
+            # Deploy with docker compose
+            echo "🚀 Running docker compose up -d..."
+            docker compose up -d
+
+            # Wait a moment for containers to start
+            sleep 5
+
+            # Check status
+            echo "✅ Checking deployment status..."
+            docker compose ps
+
+            echo "✨ Deployment completed successfully!"
+
+      - name: Verify Deployment
+        uses: appleboy/ssh-action@v1.0.0
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: ${{ secrets.SSH_PORT || '22' }}
+          script: |
+            cd ~/prod/study || {
+              echo "❌ Deployment directory not found!"
+              exit 1
+            }
+            echo "🔍 Verifying deployment..."
+
+            # Check if containers are running
+            if docker compose ps | grep -q "Up"; then
+              echo "✅ Containers are running"
+              docker compose ps
+            else
+              echo "❌ Containers are not running properly"
+              docker compose logs --tail=20
+              exit 1
+            fi
+
+      - name: Notify Success
+        if: success()
+        run: |
+          echo "🎉 Deployment completed successfully!"
+          echo "Version: ${{ steps.version.outputs.version }}"
+          echo "Server: ${{ secrets.SSH_HOST }}"
+
+      - name: Notify Failure
+        if: failure()
+        run: |
+          echo "❌ Deployment failed!"
+          echo "Please check the logs above for details."
