@@ -1,6 +1,11 @@
 name: Deploy to SSH Server
 
 on:
+  release:
+    types: [published]
+  push:
+    tags:
+      - "v*"
   workflow_run:
     workflows: ["Release - Build and Push Docker Image"]
     types:
