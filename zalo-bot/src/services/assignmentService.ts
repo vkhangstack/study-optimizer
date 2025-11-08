@@ -17,7 +17,7 @@ export class AssignmentService {
 
   async getAssignmentsByClassSubjectId(classSubjectId: string) {
     try {
-      const assignments = await prisma.assignment.findFirst({
+      const assignments = await prisma.assignment.findMany({
         where: { classSubjectId: classSubjectId },
         orderBy: { createdAt: "desc" },
       })
