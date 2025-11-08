@@ -10,4 +10,6 @@ router.get("/assignments", adminController.getAssignments)
 router.delete("/assignments/:id", adminController.deleteAssignment)
 router.put("/assignments/:id", adminController.updateAssignment)
 
+router.get("/class-subjects", adminController.getClassSubjects)
+
 export default router

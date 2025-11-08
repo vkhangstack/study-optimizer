@@ -1,11 +1,14 @@
 import { Request, Response } from "express"
 import { AssignmentService } from "../services/assignmentService"
+import { ClassService } from "../services/classService"
 
 export class AdminController {
   private assignmentService: AssignmentService
+  private classSubjectService: ClassService
 
   constructor() {
     this.assignmentService = AssignmentService.getInstance()
+    this.classSubjectService = ClassService.getInstance()
   }
 
   getAssignments = async (req: Request, res: Response) => {
@@ -26,6 +29,10 @@ export class AdminController {
       const { classSubjectId, title, description, deadline, deadlineRemind } = req.body
       if (!classSubjectId || !title || !deadline) {
         return res.status(400).json({ success: false, message: "classSubjectId, title, and deadline are required" })
+      }
+      const classSubjectInfo = await this.classSubjectService.getClassSubjectById(classSubjectId)
+      if (!classSubjectInfo) {
+        return res.status(404).json({ success: false, message: "Class subject not found" })
       }
       const assignment = await this.assignmentService.createAssignment({
         classSubjectId,
@@ -69,6 +76,15 @@ export class AdminController {
       res.json({ success: true, updatedAssignment })
     } catch (error) {
       res.status(500).json({ success: false, message: "Error updating assignment" })
+    }
+  }
+
+  getClassSubjects = async (req: Request, res: Response) => {
+    try {
+      const classSubjects = await this.classSubjectService.getAllClasses()
+      res.json({ success: true, classSubjects })
+    } catch (error) {
+      res.status(500).json({ success: false, message: "Error retrieving class subjects" })
     }
   }
 }
