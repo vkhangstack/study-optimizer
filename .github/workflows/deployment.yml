@@ -1,17 +1,10 @@
 name: Deploy to SSH Server
 
 on:
-  release:
-    types: [published]
-  push:
-    tags:
-      - "v*"
   workflow_run:
     workflows: ["Release - Build and Push Docker Image"]
     types:
       - completed
-    branches:
-      - master
 
 env:
   IMAGE_NAME: studyoptimizer-bot
@@ -19,15 +12,17 @@ env:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-    # Chỉ chạy khi release workflow thành công VÀ được trigger bởi tag (release)
-    if: |
-      github.event.workflow_run.conclusion == 'success' &&
-      startsWith(github.event.workflow_run.head_branch, 'v')
+    # Chỉ chạy khi release workflow hoàn thành THÀNH CÔNG
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
     steps:
       - name: Extract version
         id: version
         run: |
+          # Lấy version từ tag
+          VERSION="${{ github.event.workflow_run.head_branch }}"
+          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "Deploying version: ${VERSION}"
           # Get the tag or commit that triggered the workflow
           VERSION="${{ github.event.workflow_run.head_branch }}"
           if [[ -z "$VERSION" ]]; then
