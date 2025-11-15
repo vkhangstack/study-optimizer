@@ -18,13 +18,10 @@ jobs:
     steps:
       - name: Extract version
         id: version
+        env:
+          VERSION: ${{ github.event.workflow_run.head_branch }}
         run: |
-          # Lấy version từ tag
-          VERSION="${{ github.event.workflow_run.head_branch }}"
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
-          echo "Deploying version: ${VERSION}"
-          # Get the tag or commit that triggered the workflow
-          VERSION="${{ github.event.workflow_run.head_branch }}"
+          # Lấy version từ tag hoặc commit
           if [[ -z "$VERSION" ]]; then
             VERSION="latest"
           fi
