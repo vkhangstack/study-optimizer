@@ -121,9 +121,11 @@ jobs:
 
       - name: Notify Success
         if: success()
+        env:
+          VERSION: ${{ steps.version.outputs.version }}
         run: |
           echo "🎉 Deployment completed successfully!"
-          echo "Version: ${{ steps.version.outputs.version }}"
+          echo "Version: $VERSION"
           echo "Server: ${{ secrets.SSH_HOST }}"
 
       - name: Notify Failure
