@@ -59,6 +59,7 @@ jobs:
 
   verify:
     runs-on: ubuntu-latest
+    permissions: {}
     needs: build-and-push
     steps:
       - name: Verify image pushed
