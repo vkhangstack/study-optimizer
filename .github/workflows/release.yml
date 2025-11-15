@@ -69,6 +69,8 @@ jobs:
           echo "  Repository: ${{ secrets.DOCKER_USERNAME }}"
   scan-image:
     runs-on: ubuntu-latest
+    permissions:
+      security-events: write
     needs: verify
     steps:
       - name: Run Trivy vulnerability scanner
