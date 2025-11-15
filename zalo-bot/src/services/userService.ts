@@ -193,6 +193,11 @@ export class UserService {
         where: { year: Years.YEAR_2025_2026, dayOfWeek: DateUtils.getInstance().getCurrentDayOfWeek() },
       });
 
+      if (!subject || subject.length === 0) {
+        logger.info('No subjects found for today.');
+        return [];
+      }
+
       const subjectMap = subject?.reduce((map, subj) => {
         map[subj.id] = subj;
         return map;
