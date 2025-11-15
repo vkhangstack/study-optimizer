@@ -1,4 +1,5 @@
 import { Request, Response } from "express";
+import escapeHtml from "escape-html";
 import { ZaloService } from "../services/zaloService";
 import { MessageService } from "../services/messageService";
 import { logger } from "../utils/logger";
@@ -24,7 +25,7 @@ export class WebhookController {
 
       if (verifyToken === Bun.env.WEBHOOK_SECRET) {
         logger.info("Webhook verified successfully");
-        res.status(200).send(challenge);
+        res.status(200).send(escapeHtml(challenge));
       } else {
         logger.warn("Invalid webhook verification token");
         res.status(403).send("Forbidden");
