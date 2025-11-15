@@ -89,6 +89,8 @@ jobs:
 
   notify:
     runs-on: ubuntu-latest
+    permissions:
+      contents: none
     needs: verify
     steps:
       - name: Send notification
